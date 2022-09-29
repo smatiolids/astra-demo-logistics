@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Admin, Resource } from "react-admin";
+import jsonServerProvider from "ra-data-json-server";
+import { UserList } from "./modules/users/UserList";
+import { DeviceList } from "./modules/devices/DeviceList";
+import { DeviceEdit } from "./modules/devices/DeviceEdit";
+import { DeviceCreate } from "./modules/devices/DeviceCreate";
+import AppLayout from "./components/AppLayout";
+import { DarkTheme } from "./themes";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import UserIcon from "@mui/icons-material/Group";
+import Dashboard from "./modules/dashboard/Dashboard";
+import authProvider from "./providers/authProvider";
+import AstraDataProvider from "./providers/AstraDataProvider";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+// const dataProvider = jsonServerProvider("https://jsonplaceholder.typicode.com");
 
+const App = () => (
+  <Admin
+    dashboard={Dashboard}
+    authProvider={authProvider}
+    dataProvider={AstraDataProvider}
+    layout={AppLayout}
+    theme={DarkTheme}
+  >
+    {/* <Resource
+      name="users"
+      list={UserList}
+      icon={UserIcon}
+      recordRepresentation="name"
+    /> */}
+    <Resource
+      name="devices"
+      list={DeviceList}
+      icon={LocalShippingIcon}
+      edit={DeviceEdit}
+      create={DeviceCreate}
+      options={{ pk: ["organization_id", "device_id"], label: 'Devices' }}
+    />
+  </Admin>
+);
 export default App;

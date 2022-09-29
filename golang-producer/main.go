@@ -5,8 +5,9 @@ import (
 	"context"
 	"io"
 	"log"
-	"math"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -50,10 +51,11 @@ func main() {
 	tokenStr := os.Getenv("STREAMING_TOKEN")
 
 	// Constants for the messages
-
-	organization_id := os.Args[2]
-	device_id := os.Args[3]
-	key := "latlong"
+	//args := strings.Split(string(os.Args[1]), "-")
+	args := regexp.MustCompile("[\\-\\.]+").Split(filepath.Base(os.Args[1]), -1)
+	organization_id := args[0]
+	device_id := args[1]
+	key := args[2]
 
 	token := pulsar.NewAuthenticationToken(tokenStr)
 
@@ -100,19 +102,12 @@ func main() {
 			break
 		}
 
-		s := strings.Split(strings.ReplaceAll(string(line), "\"", ""), separator)
+		s := strings.Split(string(line), separator)
 
-		lat, err := strconv.ParseFloat(s[1], 64)
-		if math.IsNaN(lat) {
-			continue
-		}
-
-		long, err := strconv.ParseFloat(s[2], 64)
-		if math.IsNaN(long) {
-			continue
-		}
-
-		TS, err := time.Parse(time.RFC3339, s[3])
+		// The lines in the records have a different order (longitude, latitude)
+		value, err := strconv.ParseFloat(strings.TrimSpace(s[1]), 64)
+		value2, err := strconv.ParseFloat(strings.TrimSpace(s[0]), 64)
+		TS := time.Now()
 
 		msg := pulsar.ProducerMessage{
 			Value: &telemetryType{
@@ -121,8 +116,8 @@ func main() {
 				DeviceId:       device_id,
 				Day:            TS.Format("2006-01-02"),
 				Key:            key,
-				Value:          lat,
-				Value2:         long,
+				Value:          value,
+				Value2:         value2,
 			},
 		}
 
@@ -131,5 +126,6 @@ func main() {
 			log.Fatal(err)
 		}
 		log.Printf("[Astra Streaming] Published message: %s", line)
+		time.Sleep(1 * time.Second)
 	}
 }
