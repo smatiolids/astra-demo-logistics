@@ -9,7 +9,7 @@ import { DarkTheme } from "./themes";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import UserIcon from "@mui/icons-material/Group";
 import Dashboard from "./modules/dashboard/Dashboard";
-import authProvider from "./providers/authProvider";
+//import authProvider from "./providers/authProvider";
 import AstraDataProvider from "./providers/AstraDataProvider";
 
 // const dataProvider = jsonServerProvider("https://jsonplaceholder.typicode.com");
@@ -17,7 +17,7 @@ import AstraDataProvider from "./providers/AstraDataProvider";
 const App = () => (
   <Admin
     dashboard={Dashboard}
-    authProvider={authProvider}
+   // authProvider={authProvider}
     dataProvider={AstraDataProvider}
     layout={AppLayout}
     theme={DarkTheme}
