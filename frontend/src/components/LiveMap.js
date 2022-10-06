@@ -40,13 +40,11 @@ const GET_CURRENT_POSITION = gql`
 
 
 export function LiveMap() {
-      console.log(apiUrl);
 
   //  
   const [currentTrack, setCurrentTrack] = useState([{ lat:  20.7021094, lng: -103.375984 }]);
   
   useEffect(() => {
-    //setCurrentTrack(dataStory[cursor]);
     const interval = setInterval(() => {
       const fetchBusinesses =  () => {
             console.log("Executed");
@@ -73,7 +71,7 @@ export function LiveMap() {
               if (device.device_id !== device_id) {
                tmp.push({ lat: lat, lng: long });
                 device_id = device.device_id;
-                console.log("current track",currentTrack);
+                //console.log("current track",currentTrack);
     
               }
             });
