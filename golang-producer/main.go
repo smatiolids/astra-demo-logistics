@@ -22,8 +22,10 @@ type telemetryType struct {
 	TS             time.Time `json:"ts"`
 	Day            string    `json:"day"`
 	Key            string    `json:"key"`
-	Value          float64   `json:"value"`
-	Value2         float64   `json:"value2"`
+	Val            float32   `json:"val"`
+	Val2           float32   `json:"val2"`
+	Val_Str        string    `json:"val_str"`
+	Val2_Str       string    `json:"val2_str"`
 }
 
 var (
@@ -35,8 +37,10 @@ var (
 		"{\"name\":\"organization_id\",\"type\":\"string\"}," +
 		"{\"name\":\"device_id\",\"type\":\"string\"}," +
 		"{\"name\":\"key\",\"type\":\"string\"}," +
-		"{\"name\":\"value\",\"type\":\"float\"}," +
-		"{\"name\":\"value2\",\"type\":\"float\"}" +
+		"{\"name\":\"val\",\"type\":\"float\"}," +
+		"{\"name\":\"val2\",\"type\":\"float\"}," +
+		"{\"name\":\"val_str\",\"type\":\"string\"}," +
+		"{\"name\":\"val2_str\",\"type\":\"string\"}" +
 		"]}"
 )
 
@@ -105,8 +109,8 @@ func main() {
 		s := strings.Split(string(line), separator)
 
 		// The lines in the records have a different order (longitude, latitude)
-		value, err := strconv.ParseFloat(strings.TrimSpace(s[1]), 64)
-		value2, err := strconv.ParseFloat(strings.TrimSpace(s[0]), 64)
+		val, err := strconv.ParseFloat(strings.TrimSpace(s[1]), 32)
+		val2, err := strconv.ParseFloat(strings.TrimSpace(s[0]), 32)
 		TS := time.Now()
 
 		msg := pulsar.ProducerMessage{
@@ -116,8 +120,10 @@ func main() {
 				DeviceId:       device_id,
 				Day:            TS.Format("2006-01-02"),
 				Key:            key,
-				Value:          value,
-				Value2:         value2,
+				Val:            float32(val),
+				Val2:           float32(val2),
+				Val_Str:        strings.TrimSpace(s[1]),
+				Val2_Str:       strings.TrimSpace(s[0]),
 			},
 		}
 
@@ -125,7 +131,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("[Astra Streaming] Published message: %s", line)
-		time.Sleep(1 * time.Second)
+		log.Printf("[Astra Streaming] File: %s | v: %f / %s | v2: %f / %s | ts: %s", line, val, strings.TrimSpace(s[1]), val2, strings.TrimSpace(s[0]), TS.Format(time.RFC3339))
+		time.Sleep(3 * time.Second)
 	}
 }

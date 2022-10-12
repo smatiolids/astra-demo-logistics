@@ -1,96 +1,69 @@
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+import { useEffect } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { latLngBounds } from "leaflet";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import CarMarker from "./CarMarker";
 
-import {
-      ApolloClient,
-      InMemoryCache,
-      gql,
-    } from '@apollo/client';
-    
-const apiUrl = `https://${process.env.REACT_APP_ASTRA_DB_ID}-${process.env.REACT_APP_ASTRA_DB_REGION}.apps.astra.datastax.com/api/graphql/${process.env.REACT_APP_ASTRA_DB_KEYSPACE}`;
-
-const client = new ApolloClient({
-      uri: apiUrl,
-      fetchOptions: {
-        mode: 'no-cors',
-      },
-      cache: new InMemoryCache(),
-      headers: {
-        'x-cassandra-token':
-        process.env.REACT_APP_ASTRA_DB_APPLICATION_TOKEN,
-      },
-    })
+const TELEMETRY_KEY = "latlong";
 
 const GET_CURRENT_POSITION = gql`
-	query getLatestLatLong($org: String, $lastTS: Timestamp) {
-		telemetry_latest(
-			options: { pageSize: 100 }
-			filter: { organization_id: { eq: $org }, key: { eq: "latlong" }, ts: { gt: $lastTS } }
-		) {
-			values {
-				lat: value
-				long: value2
-				device_id
-				ts
-			}
-		}
-	}
+  query getLatestLatLong($org: String, $lastTS: Timestamp) {
+    telemetry_latest(
+      options: { pageSize: 100 }
+      filter: {
+        organization_id: { eq: $org }
+        key: { eq: "latlong" }
+        ts: { gt: $lastTS }
+      }
+    ) {
+      values {
+        lat: val
+        lng: val2
+        device_id
+        ts
+      }
+    }
+  }
 `;
 
+function Markers({ markers }) {
+  const map = useMap();
+  let markerBounds = latLngBounds([]);
+  if (markers && markers.length > 0) {
+    markers.forEach((item) => {
+      markerBounds.extend([item.lat, item.lng]);
+    });
+    map.fitBounds(markerBounds, { padding: [50, 50] });
+  }
+  return markers.map((item, i) => {
+    return (
+      <CarMarker
+        key={i}
+        device_id={item.device_id}
+        data={{ lat: item.lat, lng: item.lng } ?? {}}
+      />
+    );
+  });
+}
 
-export function LiveMap() {
+export function LiveMap(props) {
+  //
 
-  //  
-  const [currentTrack, setCurrentTrack] = useState([{ lat:  20.7021094, lng: -103.375984 }]);
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const fetchBusinesses =  () => {
-            console.log("Executed");
-            return client.query({
-              query:GET_CURRENT_POSITION
-            })
-         .then(rcvdBusinesses => {
-            console.log("data loaded : ", rcvdBusinesses.data.telemetry_latest);
+  const { data, startPolling } = useQuery(GET_CURRENT_POSITION, {
+    variables: {
+      org: "org1",
+      key: TELEMETRY_KEY,
+      lastTS: new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString(),
+    },
+    pollInterval: 5000,
+    fetchPolicy: "network-only",
+    //onCompleted: (d) => console.log("completed", new Date(), d),
+  });
 
-           if (rcvdBusinesses.data && rcvdBusinesses.data.telemetry_latest) {
-            console.log("data loaded : ", rcvdBusinesses.data.telemetry_latest);
-      
-            let device_id = "";
-            
-            let tmp = []
-            rcvdBusinesses.data.telemetry_latest.values.forEach((device) => {
-              
-              console.log("device_id:" + device.device_id);
-              const long = parseFloat(device.long);
-              console.log("long:" + long);
-              const lat = parseFloat(device.lat);
-              console.log("lat:" + lat);
-      
-              if (device.device_id !== device_id) {
-               tmp.push({ lat: lat, lng: long });
-                device_id = device.device_id;
-                //console.log("current track",currentTrack);
-    
-              }
-            });
-            setCurrentTrack(tmp);
-          }
-         })
-         .catch(err => {
-           // error handling
-           console.log(err)
-         });
-      }; 
-       fetchBusinesses();  
-     }, 1000);
-     return () => {
-       clearInterval(interval);
-     };
-
-
-  }, []);
+  // useEffect(() => {
+  //   console.log("start pooling");
+  //   startPolling(1000);
+  // }, []);
 
   return (
     <div>
@@ -104,13 +77,8 @@ export function LiveMap() {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {
-        currentTrack.map((item, i) => { return (
-				 <CarMarker key={i} data={{ lat: item.lat, lng: item.lng } ?? {}} />
-			  )})
-      }
+        <Markers markers={data?.telemetry_latest?.values || []} />
       </MapContainer>
     </div>
   );
 }
-

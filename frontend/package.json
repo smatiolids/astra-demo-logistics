@@ -11,6 +11,7 @@
     "@types/node": "^16.11.61",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "graphql": "^16.6.0",
     "leaflet": "^1.9.2",
     "prop-types": "^15.8.1",
     "ra-data-json-server": "^4.3.4",
@@ -46,5 +47,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^6.4.0",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1"
   }
 }
