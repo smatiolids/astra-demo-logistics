@@ -53,7 +53,7 @@ const TrackingDeviceMap = (props) => {
 
   const { data } = useQuery(GET_TRACKING, {
     variables: {
-      org: process.env.REACT_APP_ORD_ID,
+      org: process.env.REACT_APP_ORG_ID,
       dev: props.device_id,
       key: TELEMETRY_KEY,
       lastTS: config.lastTS,

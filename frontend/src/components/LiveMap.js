@@ -50,7 +50,7 @@ export function LiveMap(props) {
 
   const { data } = useQuery(GET_CURRENT_POSITION, {
     variables: {
-      org: process.env.REACT_APP_ORD_ID,
+      org: process.env.REACT_APP_ORG_ID,
       key: TELEMETRY_KEY,
       lastTS: new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString(),
     },
