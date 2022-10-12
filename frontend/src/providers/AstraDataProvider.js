@@ -26,8 +26,9 @@ const IdToRecord = (resource, id) => {
 
 const AstraDataProvider = {
   getList: (resource, params) => {
-    const { page, perPage } = params.pagination;
-    const { field, order } = params.sort;
+    const { perPage } = params.pagination;
+    // const { page, perPage } = params.pagination;
+    // const { field, order } = params.sort;
     const query = {
       "page-size": perPage,
     };
@@ -81,7 +82,7 @@ const AstraDataProvider = {
   update: (resource, params) => {
     let body = params.data;
     // Not allowed to send id and pk fields in body
-    resources[resource].keys.concat('id').forEach(k => delete body[k])
+    resources[resource].keys.concat("id").forEach((k) => delete body[k]);
     return httpClient(
       `${apiUrl}/${resource}/${IdToRecord(resource, params.id)}`,
       {
@@ -108,18 +109,18 @@ const AstraDataProvider = {
   },
 
   create: (resource, params) => {
-
     let body = params.data;
     // Not allowed to send id field in body
-    ["id"].forEach(k => delete body[k])
+    ["id"].forEach((k) => delete body[k]);
 
     return httpClient(`${apiUrl}/${resource}`, {
       ...apiOptions,
       method: "POST",
       body: JSON.stringify(params.data),
     }).then(({ json }) => ({
-      data: { ...params.data, id: RecordId(resource, json)  },
-    }))},
+      data: { ...params.data, id: RecordId(resource, json) },
+    }));
+  },
 
   delete: (resource, params) =>
     httpClient(`${apiUrl}/${resource}/${params.id}`, {

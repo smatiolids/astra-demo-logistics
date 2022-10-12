@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { latLngBounds } from "leaflet";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
@@ -49,9 +48,9 @@ function Markers({ markers }) {
 export function LiveMap(props) {
   //
 
-  const { data, startPolling } = useQuery(GET_CURRENT_POSITION, {
+  const { data } = useQuery(GET_CURRENT_POSITION, {
     variables: {
-      org: "org1",
+      org: process.env.REACT_APP_ORD_ID,
       key: TELEMETRY_KEY,
       lastTS: new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString(),
     },
