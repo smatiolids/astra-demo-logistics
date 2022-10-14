@@ -106,12 +106,21 @@ func main() {
 			break
 		}
 
-		s := strings.Split(string(line), separator)
-
-		// The lines in the records have a different order (longitude, latitude)
-		val, err := strconv.ParseFloat(strings.TrimSpace(s[1]), 32)
-		val2, err := strconv.ParseFloat(strings.TrimSpace(s[0]), 32)
 		TS := time.Now()
+
+		s := strings.Split(string(line), separator)
+		var val, val2 float64
+		var val_str, val2_str string
+
+		if key == "latlong" {
+			// The lines in the records have a different order (longitude, latitude)
+			val_str, val2_str = strings.TrimSpace(s[1]), strings.TrimSpace(s[0])
+			val, err = strconv.ParseFloat(val_str, 32)
+			val2, err = strconv.ParseFloat(val2_str, 32)
+		} else {
+			val_str = strings.TrimSpace(s[0])
+			val, err = strconv.ParseFloat(val_str, 32)
+		}
 
 		msg := pulsar.ProducerMessage{
 			Value: &telemetryType{
@@ -122,8 +131,8 @@ func main() {
 				Key:            key,
 				Val:            float32(val),
 				Val2:           float32(val2),
-				Val_Str:        strings.TrimSpace(s[1]),
-				Val2_Str:       strings.TrimSpace(s[0]),
+				Val_Str:        val_str,
+				Val2_Str:       val2_str,
 			},
 		}
 
@@ -131,7 +140,15 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("[Astra Streaming] File: %s | v: %f / %s | v2: %f / %s | ts: %s", line, val, strings.TrimSpace(s[1]), val2, strings.TrimSpace(s[0]), TS.Format(time.RFC3339))
+		// log.Printf("[Astra Streaming] File: %s | v: %f / %s | v2: %f / %s | ts: %s", line, val, strings.TrimSpace(s[1]), val2, strings.TrimSpace(s[0]), TS.Format(time.RFC3339))
+		log.Printf("[Astra Streaming] File: %s | v: %f / %s | ts: %s", line, val, val_str, TS.Format(time.RFC3339))
 		time.Sleep(3 * time.Second)
 	}
+}
+
+func IfThenElse(condition bool, a interface{}, b interface{}) interface{} {
+	if condition {
+		return a
+	}
+	return b
 }

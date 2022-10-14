@@ -1,38 +1,12 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { latLngBounds } from "leaflet";
 import { MapContainer, TileLayer, Polyline, useMap } from "react-leaflet";
+import { GET_TELEMETRY } from "../graphQL/queries";
+import { telemetry_keys } from "../globals";
+import CarMarker from "./CarMarker";
 
-const TELEMETRY_KEY = "latlong";
-
-const GET_TRACKING = gql`
-  query getTracking(
-    $org: String
-    $dev: String
-    $key: String
-    $lastDay: Date
-    $lastTS: Timestamp
-  ) {
-    telemetry(
-      options: { pageSize: 100 }
-      filter: {
-        organization_id: { eq: $org }
-        device_id: { eq: $dev }
-        key: { eq: $key }
-        day: { eq: $lastDay }
-        ts: { gt: $lastTS }
-      }
-    ) {
-      values {
-        lat: value
-        lng: value2
-        ts
-      }
-    }
-  }
-`;
-
-function Path({ polyline }) {
+function Path({ polyline, device_id, latest_position }) {
   const pathOptions = { color: "red" };
   const map = useMap();
   let markerBounds = latLngBounds([]);
@@ -42,25 +16,42 @@ function Path({ polyline }) {
     });
     map.fitBounds(markerBounds);
   }
-  return <Polyline pathOptions={pathOptions} positions={polyline} />;
+  console.log("latest_position", latest_position);
+  return (
+    <>
+      {latest_position[0] && (
+        <CarMarker
+          device_id={device_id}
+          data={{ lat: latest_position[0], lng: latest_position[1] } ?? {}}
+        />
+      )}
+      <Polyline pathOptions={pathOptions} positions={polyline} />
+    </>
+  );
 }
 
 const TrackingDeviceMap = (props) => {
   const [polyline, setPolyline] = useState([]);
   const [config, setConfig] = useState({
     lastTS: new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString(),
+    latestPosition: [],
+    pooling: 0,
   });
 
-  const { data } = useQuery(GET_TRACKING, {
+  const { data } = useQuery(GET_TELEMETRY, {
     variables: {
       org: process.env.REACT_APP_ORG_ID,
       dev: props.device_id,
-      key: TELEMETRY_KEY,
+      key: telemetry_keys.LATLONG,
       lastTS: config.lastTS,
       lastDay: config.lastTS.substring(0, 10),
     },
-    pollInterval: 5000,
+    pollInterval: config.pooling,
     fetchPolicy: "network-only",
+
+    onCompleted: (data) => {
+      console.log("onCompleted", data);
+    },
   });
 
   useEffect(() => {
@@ -70,26 +61,31 @@ const TrackingDeviceMap = (props) => {
       data.telemetry.values &&
       data.telemetry.values[0]
     ) {
-      setConfig((l) => ({
-        lastPosition: [
-          data.telemetry.values[0].lat,
-          data.telemetry.values[0].lng,
-        ],
-        lastTS: data.telemetry.values[0]["ts"],
-        firstPosition: l.firstPosition
-          ? l.firstPosition
-          : [data.telemetry.values[0].lat, data.telemetry.values[0].lng],
-      }));
+
 
       setPolyline((p) =>
         p.concat(data.telemetry.values.reverse().map((e) => [e.lat, e.lng]))
       );
+
+      setConfig((l) => ({
+        latestPosition: [
+          data.telemetry.values[data.telemetry.values.length-1].lat,
+          data.telemetry.values[data.telemetry.values.length-1].lng,
+        ],
+        lastTS: data.telemetry.values[data.telemetry.values.length-1]["ts"],
+        firstPosition: l.firstPosition
+          ? l.firstPosition
+          : [data.telemetry.values[data.telemetry.values.length-1].lat, data.telemetry.values[data.telemetry.values.length-1].lng],
+        pooling: 5000,
+      }));
     }
   }, [data]);
 
+  console.log("config", config);
+
   return (
     <MapContainer
-      style={{ height: "100%", width: "100%" }}
+      className="h-full w-full"
       center={config.initialPosition || [0, 0]}
       zoom={13}
       scrollWheelZoom={true}
@@ -98,7 +94,11 @@ const TrackingDeviceMap = (props) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Path polyline={polyline} />
+      <Path
+        polyline={polyline}
+        device_id={props.device_id}
+        latest_position={config.latestPosition}
+      />
     </MapContainer>
   );
 };

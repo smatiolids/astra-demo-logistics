@@ -1,4 +1,4 @@
-import { Edit, ReferenceInput, SimpleForm, TextInput, useRecordContext } from "react-admin";
+import { Edit,  SimpleForm, TextInput, useRecordContext } from "react-admin";
 const DeviceTitle = () => {
   const record = useRecordContext();
   return <span>Device {record ? `"${record.name}"` : ""}</span>;

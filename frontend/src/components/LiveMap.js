@@ -1,29 +1,9 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { latLngBounds } from "leaflet";
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { telemetry_keys } from "../globals";
+import { GET_LATEST } from "../graphQL/queries";
 import CarMarker from "./CarMarker";
-
-const TELEMETRY_KEY = "latlong";
-
-const GET_CURRENT_POSITION = gql`
-  query getLatestLatLong($org: String, $lastTS: Timestamp) {
-    telemetry_latest(
-      options: { pageSize: 100 }
-      filter: {
-        organization_id: { eq: $org }
-        key: { eq: "latlong" }
-        ts: { gt: $lastTS }
-      }
-    ) {
-      values {
-        lat: val
-        lng: val2
-        device_id
-        ts
-      }
-    }
-  }
-`;
 
 function Markers({ markers }) {
   const map = useMap();
@@ -48,22 +28,17 @@ function Markers({ markers }) {
 export function LiveMap(props) {
   //
 
-  const { data } = useQuery(GET_CURRENT_POSITION, {
+  const { data } = useQuery(GET_LATEST, {
     variables: {
       org: process.env.REACT_APP_ORG_ID,
-      key: TELEMETRY_KEY,
       lastTS: new Date(new Date().setUTCHours(0, 0, 0, 0)).toISOString(),
+      key: telemetry_keys.LATLONG,
     },
     pollInterval: 5000,
     fetchPolicy: "network-only",
     //onCompleted: (d) => console.log("completed", new Date(), d),
   });
-
-  // useEffect(() => {
-  //   console.log("start pooling");
-  //   startPolling(1000);
-  // }, []);
-
+  
   return (
     <div>
       <MapContainer
