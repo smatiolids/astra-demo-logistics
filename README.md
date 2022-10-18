@@ -11,6 +11,11 @@ The producer will receive a file path, an organization_id and a device_id
 go run main.go <file path>
 ````
 
+## How to generate path files
+
+- Go to the url https://www.keene.edu/campus/maps/tool/[https://www.keene.edu/campus/maps/tool/] and create a path.
+- Copy the lat-long part separated by comma to a file with the following pattern <organization_id>-<device-id>-<data_or_key>.txt
+- The producer will send a line every 3 seconds with the current timestamp.
 
 # Frontend
 
@@ -24,8 +29,3 @@ npm install
 npm start
 ````
 
-## How to generate path files
-
-- Go to the url https://www.keene.edu/campus/maps/tool/[https://www.keene.edu/campus/maps/tool/] and create a path.
-- Copy the lat-long part separated by comma to a file with the following pattern <organization_id>-<device-id>-<data_or_key>.txt
-- The producer will send a line every 3 seconds with the current timestamp.

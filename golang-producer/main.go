@@ -123,6 +123,7 @@ func main() {
 		}
 
 		msg := pulsar.ProducerMessage{
+			Key: organization_id + "-" + device_id + "-" + key + "-" + TS.Format(time.RFC3339),
 			Value: &telemetryType{
 				TS:             TS,
 				OrganizationId: organization_id,
@@ -134,6 +135,7 @@ func main() {
 				Val_Str:        val_str,
 				Val2_Str:       val2_str,
 			},
+			EventTime: time.Now(),
 		}
 
 		_, err = producer.Send(ctx, &msg)
