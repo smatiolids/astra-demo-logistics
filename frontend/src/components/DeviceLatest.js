@@ -45,7 +45,7 @@ const DeviceLatest = (props) => {
               <div className="font-bold w-32">
                 {<div>{telemetry_icons[e.key]}</div>}
               </div>
-              {`${e["val"]}`} {e["val2"] && ` | ${e["val2"]}`}
+              {`${e["value"]}`} {e["value2"] && ` | ${e["value2"]}`}
             </div>
           ))}
         </div>

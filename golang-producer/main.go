@@ -22,10 +22,8 @@ type telemetryType struct {
 	TS             time.Time `json:"ts"`
 	Day            string    `json:"day"`
 	Key            string    `json:"key"`
-	Val            float32   `json:"val"`
-	Val2           float32   `json:"val2"`
-	Val_Str        string    `json:"val_str"`
-	Val2_Str       string    `json:"val2_str"`
+	Value          float32   `json:"value"`
+	Value2         float32   `json:"value2"`
 }
 
 var (
@@ -37,10 +35,8 @@ var (
 		"{\"name\":\"organization_id\",\"type\":\"string\"}," +
 		"{\"name\":\"device_id\",\"type\":\"string\"}," +
 		"{\"name\":\"key\",\"type\":\"string\"}," +
-		"{\"name\":\"val\",\"type\":\"float\"}," +
-		"{\"name\":\"val2\",\"type\":\"float\"}," +
-		"{\"name\":\"val_str\",\"type\":\"string\"}," +
-		"{\"name\":\"val2_str\",\"type\":\"string\"}" +
+		"{\"name\":\"value\",\"type\":\"float\"}," +
+		"{\"name\":\"value2\",\"type\":\"float\"}" +
 		"]}"
 )
 
@@ -109,17 +105,17 @@ func main() {
 		TS := time.Now()
 
 		s := strings.Split(string(line), separator)
-		var val, val2 float64
-		var val_str, val2_str string
+		var value, value2 float64
+		var value_str, value2_str string
 
 		if key == "latlong" {
 			// The lines in the records have a different order (longitude, latitude)
-			val_str, val2_str = strings.TrimSpace(s[1]), strings.TrimSpace(s[0])
-			val, err = strconv.ParseFloat(val_str, 32)
-			val2, err = strconv.ParseFloat(val2_str, 32)
+			value_str, value2_str = strings.TrimSpace(s[1]), strings.TrimSpace(s[0])
+			value, err = strconv.ParseFloat(value_str, 32)
+			value2, err = strconv.ParseFloat(value2_str, 32)
 		} else {
-			val_str = strings.TrimSpace(s[0])
-			val, err = strconv.ParseFloat(val_str, 32)
+			value_str = strings.TrimSpace(s[0])
+			value, err = strconv.ParseFloat(value_str, 32)
 		}
 
 		msg := pulsar.ProducerMessage{
@@ -130,10 +126,8 @@ func main() {
 				DeviceId:       device_id,
 				Day:            TS.Format("2006-01-02"),
 				Key:            key,
-				Val:            float32(val),
-				Val2:           float32(val2),
-				Val_Str:        val_str,
-				Val2_Str:       val2_str,
+				Value:          float32(value),
+				Value2:         float32(value2),
 			},
 			EventTime: time.Now(),
 		}
@@ -143,7 +137,7 @@ func main() {
 			log.Fatal(err)
 		}
 		// log.Printf("[Astra Streaming] File: %s | v: %f / %s | v2: %f / %s | ts: %s", line, val, strings.TrimSpace(s[1]), val2, strings.TrimSpace(s[0]), TS.Format(time.RFC3339))
-		log.Printf("[Astra Streaming] File: %s | v: %f / %s | ts: %s", line, val, val_str, TS.Format(time.RFC3339))
+		log.Printf("[Astra Streaming] File: %s | v: %f / %s | ts: %s", line, value, value_str, TS.Format(time.RFC3339))
 		time.Sleep(3 * time.Second)
 	}
 }

@@ -24,10 +24,10 @@ CREATE TABLE telemetry_latest (
   key text,
   day date,
   ts timestamp,
-  value decimal,
-  value2 decimal,
-  primary key ((organization_id), device_id, key)
-) ;
+  value float,
+  value2 float
+  primary key ((organization_id), key, device_id )
+) 
 
 CREATE CUSTOM INDEX telemetry_latest_key ON telemetry_latest (key) 
 USING 'StorageAttachedIndex' ;

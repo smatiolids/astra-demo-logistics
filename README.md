@@ -22,9 +22,12 @@ go run main.go <file path>
 Built on react-admin (https://marmelab.com/react-admin/).
 The data provider is adapted to woth with Astra Stargate.
 
+ATTENTION: Variables for the React App have to be defined in the .env file inside the "/frontend" folder
+
 To run, just use the following command:
 
 ````
+cd frontend
 npm install
 npm start
 ````

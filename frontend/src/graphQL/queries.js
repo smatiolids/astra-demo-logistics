@@ -10,8 +10,8 @@ export const GET_LATEST = gql`
       }
     ) {
       values {
-        lat: val
-        lng: val2
+        lat: value
+        lng: value2
         device_id
         ts
       }
@@ -57,8 +57,8 @@ export const GET_TELEMETRY_LATEST_BY_DEVICE = gql`
       }
     ) {
       values {
-        val
-        val2
+        value
+        value2
         key
         ts
       }
