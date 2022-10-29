@@ -3,7 +3,6 @@ package producer
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -16,6 +15,13 @@ import (
 	"github.com/apache/pulsar-client-go/pulsar"
 	"github.com/joho/godotenv"
 )
+
+// type ProducerService interface {
+// 	Produce(filename string)
+// }
+
+type ProducerService struct {
+}
 
 type telemetryType struct {
 	DeviceId       string    `json:"device_id"`
@@ -46,7 +52,7 @@ var (
 	client    pulsar.Client
 )
 
-func New() {
+func init() {
 
 	log.Println("[Astra Streaming] Starting Pulsar Client")
 	err := godotenv.Load("../.env")
@@ -73,12 +79,8 @@ func New() {
 
 }
 
-func ProduceTest(filename string) {
-	fmt.Println("Filepath: %s", filename)
-}
-
-func Produce(filename string) {
-	log.Println("[Astra Streaming] Starting Pulsar Producer")
+func (producer ProducerService) Produce(filename string) {
+	log.Println("[Astra Streaming] Starting Pulsar Producer: %s", filename)
 	args := regexp.MustCompile("[\\-\\.]+").Split(filepath.Base(filename), -1)
 	organization_id := args[0]
 	device_id := args[1]
@@ -87,7 +89,7 @@ func Produce(filename string) {
 	log.Printf("[Astra Streaming] Creating producer...")
 	producerJS := pulsar.NewJSONSchema(tradeSchemaDef, nil)
 	// Use the client to instantiate a producer
-	producer, err := client.CreateProducer(pulsar.ProducerOptions{
+	p, err := client.CreateProducer(pulsar.ProducerOptions{
 		Topic:  topicName,
 		Schema: producerJS,
 	})
@@ -97,10 +99,10 @@ func Produce(filename string) {
 		log.Fatal(err)
 	}
 
-	defer producer.Close()
+	defer p.Close()
 	log.Printf("[Astra Streaming] Opening file... %s", filename)
 
-	file, err := os.Open(filename)
+	file, err := os.Open("./tmp/" + filename)
 	if err != nil {
 		panic(err)
 	}
@@ -146,12 +148,12 @@ func Produce(filename string) {
 			EventTime: time.Now(),
 		}
 
-		_, err = producer.Send(ctx, &msg)
+		_, err = p.Send(ctx, &msg)
 		if err != nil {
 			log.Fatal(err)
 		}
 		// log.Printf("[Astra Streaming] File: %s | v: %f / %s | v2: %f / %s | ts: %s", line, val, strings.TrimSpace(s[1]), val2, strings.TrimSpace(s[0]), TS.Format(time.RFC3339))
-		log.Printf("[Astra Streaming] File: %s | v: %f / %s | ts: %s", line, value, value_str, TS.Format(time.RFC3339))
+		log.Printf("[Astra Streaming-%s] : %s | v: %f / %s | ts: %s", filename, line, value, value_str, TS.Format(time.RFC3339))
 		time.Sleep(3 * time.Second)
 	}
 }
