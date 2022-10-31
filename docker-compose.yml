@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  logistics-front: 
+    build: 
+      context: frontend
+      dockerfile: Dockerfile
+    command: npm start
+    env_file: .env
+    ports:
+      - "3000:3000"
+    container_name: logistics-front
+  logistics-backend: 
+    build: 
+      context: golang-backend
+      dockerfile: Dockerfile
+    command: /golang-backend
+    env_file: .env
+    ports:
+      - "4001:4001"
+    container_name: logistics-backend
+
+    

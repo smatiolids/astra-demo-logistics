@@ -1,0 +1,481 @@
+{
+	"info": {
+		"_postman_id": "9bf78803-b293-4ba5-a875-c6e02ecb3a22",
+		"name": "DataStax Logistics Demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3343333"
+	},
+	"item": [
+		{
+			"name": "Backend Producer",
+			"item": []
+		},
+		{
+			"name": "Stargate",
+			"item": []
+		},
+		{
+			"name": "getLatestPosition",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "   query getLatestLatLong ($org: String, $lastTS: Timestamp) {\r\n    telemetry_latest (options: {pageSize: 1000} , \r\n      filter: { organization_id: { eq: $org}, key: { eq:\"latlong\"}, ts : { gt : \r\n      $lastTS}} ) {\r\n      values {\r\n        lat: val\r\n        long: val2\r\n        device_id\r\n        ts\r\n      }\r\n    }\r\n  }",
+						"variables": "{\n    \"org\": \"org1\",\n    \"key\": \"latlong\",\n    \"lastTS\": \"2022-09-18T15:42:23.123Z\"\n}"
+					}
+				},
+				"url": {
+					"raw": "https://{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}.apps.astra.datastax.com/api/graphql/{{ASTRA_DB_KEYSPACE}}",
+					"protocol": "https",
+					"host": [
+						"{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}",
+						"apps",
+						"astra",
+						"datastax",
+						"com"
+					],
+					"path": [
+						"api",
+						"graphql",
+						"{{ASTRA_DB_KEYSPACE}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getLatest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "   query getLatestByDevice ($org: String, $dev: String, $lastTS: Timestamp) {\r\n    telemetry_latest (options: {pageSize: 1000} , \r\n      filter: { organization_id: { eq: $org}, device_id: { eq:$dev}, ts : { gt : \r\n      $lastTS}} ) {\r\n      values {\r\n        val\r\n        device_id\r\n        key\r\n        ts\r\n      }\r\n    }\r\n  }",
+						"variables": "{\n    \"org\": \"org1\",\n    \"dev\": \"dev003\",\n    \"lastTS\": \"2022-09-18T15:42:23.123Z\"\n}"
+					}
+				},
+				"url": {
+					"raw": "https://{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}.apps.astra.datastax.com/api/graphql/{{ASTRA_DB_KEYSPACE}}",
+					"protocol": "https",
+					"host": [
+						"{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}",
+						"apps",
+						"astra",
+						"datastax",
+						"com"
+					],
+					"path": [
+						"api",
+						"graphql",
+						"{{ASTRA_DB_KEYSPACE}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getLatest Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "   query getLatestLatLong ($org: String, $lastTS: Timestamp) {\r\n    telemetry_latest (options: {pageSize: 1000} , \r\n      filter: { organization_id: { eq: $org}, key: { eq:\"latlong\"}, ts : { gt : \r\n      $lastTS}} ) {\r\n      values {\r\n        lat: val\r\n        long: val2\r\n        device_id\r\n        ts\r\n      }\r\n    },\r\n    telemetry (options: {pageSize: 100} , \r\n      filter: { organization_id: { eq: $org}, device_id: { eq: $dev }, key: {eq: $key}, day: {eq: $lastDay}, ts : { gt : \r\n      $lastTS}} ) {\r\n      values {\r\n        lat: value\r\n        long: value2\r\n        device_id\r\n        ts\r\n      }\r\n    }\r\n  }",
+						"variables": "{\n    \"org\": \"org1\",\n    \"key\": \"latlong\",\n    \"lastTS\": \"2022-09-18T15:42:23.123Z\"\n}"
+					}
+				},
+				"url": {
+					"raw": "https://{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}.apps.astra.datastax.com/api/graphql/{{ASTRA_DB_KEYSPACE}}",
+					"protocol": "https",
+					"host": [
+						"{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}",
+						"apps",
+						"astra",
+						"datastax",
+						"com"
+					],
+					"path": [
+						"api",
+						"graphql",
+						"{{ASTRA_DB_KEYSPACE}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getDevice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "   query getDevice ($org: String, $dev: String) {\r\n    devices (options: {pageSize: 1} , \r\n      filter: { organization_id: { eq: $org}, device_id: { eq: $dev}}) {\r\n      values {\r\n        name\r\n        description\r\n      }\r\n    }\r\n  }",
+						"variables": "{\n    \"org\": \"org1\",\n    \"dev\": \"dev003\"\n}"
+					}
+				},
+				"url": {
+					"raw": "https://{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}.apps.astra.datastax.com/api/graphql/{{ASTRA_DB_KEYSPACE}}",
+					"protocol": "https",
+					"host": [
+						"{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}",
+						"apps",
+						"astra",
+						"datastax",
+						"com"
+					],
+					"path": [
+						"api",
+						"graphql",
+						"{{ASTRA_DB_KEYSPACE}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getTracking",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "   query getLatestLatLong ($org: String, $dev: String, $key: String, $lastDay: Date, $lastTS: Timestamp) {\r\n    telemetry (options: {pageSize: 100} , \r\n      filter: { organization_id: { eq: $org}, device_id: { eq: $dev }, key: {eq: $key}, day: {eq: $lastDay}, ts : { gt : \r\n      $lastTS}} ) {\r\n      values {\r\n        lat: value\r\n        long: value2\r\n        device_id\r\n        ts\r\n      }\r\n    }\r\n  }",
+						"variables": "{\n    \"org\": \"org1\",\n    \"dev\": \"dev003\",\n    \"key\": \"latlong\",\n    \"lastTS\": \"2022-10-11T00:00:00.000Z\",\n    \"lastDay\": \"2022-10-11\"\n}"
+					}
+				},
+				"url": {
+					"raw": "https://{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}.apps.astra.datastax.com/api/graphql/{{ASTRA_DB_KEYSPACE}}",
+					"protocol": "https",
+					"host": [
+						"{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}",
+						"apps",
+						"astra",
+						"datastax",
+						"com"
+					],
+					"path": [
+						"api",
+						"graphql",
+						"{{ASTRA_DB_KEYSPACE}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Devices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}.apps.astra.datastax.com/api/rest/v2/keyspaces/{{ASTRA_DB_KEYSPACE}}/devices/rows?page-size=5",
+					"protocol": "https",
+					"host": [
+						"{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}",
+						"apps",
+						"astra",
+						"datastax",
+						"com"
+					],
+					"path": [
+						"api",
+						"rest",
+						"v2",
+						"keyspaces",
+						"{{ASTRA_DB_KEYSPACE}}",
+						"devices",
+						"rows"
+					],
+					"query": [
+						{
+							"key": "page-size",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Device",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}.apps.astra.datastax.com/api/rest/v2/keyspaces/{{ASTRA_DB_KEYSPACE}}/devices/org1/dev001",
+					"protocol": "https",
+					"host": [
+						"{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}",
+						"apps",
+						"astra",
+						"datastax",
+						"com"
+					],
+					"path": [
+						"api",
+						"rest",
+						"v2",
+						"keyspaces",
+						"{{ASTRA_DB_KEYSPACE}}",
+						"devices",
+						"org1",
+						"dev001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Device",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \"name\": \"Device 01222\", \"description\": \"Truck\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}.apps.astra.datastax.com/api/rest/v2/keyspaces/{{ASTRA_DB_KEYSPACE}}/devices/org1/dev001",
+					"protocol": "https",
+					"host": [
+						"{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}",
+						"apps",
+						"astra",
+						"datastax",
+						"com"
+					],
+					"path": [
+						"api",
+						"rest",
+						"v2",
+						"keyspaces",
+						"{{ASTRA_DB_KEYSPACE}}",
+						"devices",
+						"org1",
+						"dev001"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \"organization_id\": \"org1\", \"device_id\": \"dev002\",\"name\": \"Device 01222\", \"description\": \"Truck\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}.apps.astra.datastax.com/api/rest/v2/keyspaces/{{ASTRA_DB_KEYSPACE}}/devices",
+					"protocol": "https",
+					"host": [
+						"{{ASTRA_DB_ID}}-{{ASTRA_DB_REGION}}",
+						"apps",
+						"astra",
+						"datastax",
+						"com"
+					],
+					"path": [
+						"api",
+						"rest",
+						"v2",
+						"keyspaces",
+						"{{ASTRA_DB_KEYSPACE}}",
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Produce",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"filename\": \"org1-dev006-latlong.txt\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{BACKEND_HOST}}/produce-file",
+					"protocol": "http",
+					"host": [
+						"{{BACKEND_HOST}}"
+					],
+					"path": [
+						"produce-file"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Files",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{BACKEND_HOST}}/files",
+					"protocol": "http",
+					"host": [
+						"{{BACKEND_HOST}}"
+					],
+					"path": [
+						"files"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{BACKEND_HOST}}/ping",
+					"protocol": "http",
+					"host": [
+						"{{BACKEND_HOST}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Files DELETE",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://{{BACKEND_HOST}}/files",
+					"protocol": "http",
+					"host": [
+						"{{BACKEND_HOST}}"
+					],
+					"path": [
+						"files"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Producer Upload",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "upload[]",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{BACKEND_HOST}}/upload",
+					"protocol": "http",
+					"host": [
+						"{{BACKEND_HOST}}"
+					],
+					"path": [
+						"upload"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{ASTRA_DB_APPLICATION_TOKEN}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "X-Cassandra-Token",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ASTRA_DB_ID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ASTRA_DB_REGION",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ASTRA_DB_KEYSPACE",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ASTRA_DB_APPLICATION_TOKEN",
+			"value": "AstraCS:",
+			"type": "string"
+		},
+		{
+			"key": "BACKEND_HOST",
+			"value": "localhost:4001",
+			"type": "string"
+		}
+	]
+}
