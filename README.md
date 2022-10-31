@@ -32,6 +32,11 @@ All the messages can be triggered via APIs.
   - Start the producer for the specified file
 
 > You can import the file "DataStax Logistics Demo.postman_collection.json" in Postman to interact with the backend
+
+### Attention
+
+Once the producer is triggered, it is not possible to stop it. If needed, stop the container and then clean the data.
+
 ## How to generate path files
 
 - Go to the url https://www.keene.edu/campus/maps/tool/[https://www.keene.edu/campus/maps/tool/] and create a path.
