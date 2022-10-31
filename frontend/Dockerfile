@@ -7,8 +7,8 @@ FROM node:16.14.2-alpine
 # COPY --from=golang /app/golang /usr/local/bin/
 
 WORKDIR /usr/app
-COPY frontend/package*.json ./
+COPY package*.json ./
 RUN npm install
-COPY frontend/. .
+COPY . .
 EXPOSE 3000
 CMD ["npm", "start"]

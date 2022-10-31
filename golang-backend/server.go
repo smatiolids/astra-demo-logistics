@@ -25,8 +25,14 @@ type ProduceFileReq struct {
 func main() {
 	server := gin.Default()
 
+	server.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
+
 	// Read all the files in the tmp directory and start send the messages in parallel
-	server.GET("/produce", func(ctx *gin.Context) {
+	server.POST("/produce", func(ctx *gin.Context) {
 		files, err := ioutil.ReadDir(tempFolder)
 		var res []string
 		if err != nil {
@@ -120,5 +126,5 @@ func main() {
 		c.JSON(http.StatusOK, res)
 	})
 
-	server.Run("localhost:4000")
+	server.Run(":" + os.Getenv("BACKEND_PORT"))
 }
