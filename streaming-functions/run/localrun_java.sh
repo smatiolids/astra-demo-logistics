@@ -1,0 +1,13 @@
+pulsar-admin functions localrun \
+  --jar /Users/samuel.matioli/work/astra-demo-logistics/streaming-functions/java/streamingfunction/target/streamingfunction-1.0-SNAPSHOT.jar \
+  --classname com.astra.logisticsdemo.CheckSpeedFunction \
+  --broker-service-url pulsar+ssl://<Pulsar URL>6651 \
+  --client-auth-params <Pulsar TOKEN> \
+  --client-auth-plugin org.apache.pulsar.client.impl.auth.AuthenticationToken \
+  --tenant cdcdemo-streams \
+  --namespace default \
+  --name checkSpeed \
+  --auto-ack true \
+  --inputs persistent://cdcdemo-streams/default/telemetry \
+  --output persistent://cdcdemo-streams/default/alert \
+  --log-topic persistent://cdcdemo-streams/default/test-log 
