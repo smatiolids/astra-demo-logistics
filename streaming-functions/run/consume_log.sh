@@ -1,0 +1,1 @@
+pulsar-client consume cdcdemo-streams/default/test-log -s "local-subscription" -n 0
