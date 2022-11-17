@@ -39,8 +39,11 @@ public class CheckSpeedFunction implements Function<GenericRecord, Void> {
     @Override
     public Void process(GenericRecord input, Context context) throws Exception {
 
-        if (input.getField("key").equals(speed_key)
-                && (Float.compare(Float.valueOf(input.getField("value").toString()), speed_limit) > 0)) {
+        String input_key = input.getField("key").toString();
+        float input_val = Float.valueOf(input.getField("value").toString());
+
+        if (input_key.equals(speed_key)
+                && (Float.compare(input_val, speed_limit) > 0)) {
             /*
              * Create the record based on the source record, adds a message and send
              */
@@ -59,16 +62,8 @@ public class CheckSpeedFunction implements Function<GenericRecord, Void> {
                     .eventTime(System.currentTimeMillis())
                     .value(recordBuilder.build())
                     .send();
-            context.getLogger()
-                    .info(String
-                            .format("Speed Limit: " + input.getField("key") + " "
-                                    + input.getField("value").toString()));
 
-            context.getLogger().info("MessageId: " + sendResult.toString());
-        } else {
-            context.getLogger()
-                    .info(String
-                            .format("Speed OK: " + input.getField("key") + " " + input.getField("value").toString()));
+            context.getLogger().info("[Alert produced]: MessageId " + sendResult.toString());
         }
 
         return null;
