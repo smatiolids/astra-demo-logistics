@@ -106,12 +106,10 @@ dist
 
 .DS_Store
 
-<<<<<<< HEAD
 
 ___*
 
 .vscode
-=======
 # Compiled class file
 *.class
 
@@ -140,4 +138,3 @@ replay_pid*
 .vscode
 
 ___*
->>>>>>> feat/streaming-function
