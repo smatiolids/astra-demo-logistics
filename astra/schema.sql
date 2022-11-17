@@ -34,3 +34,16 @@ USING 'StorageAttachedIndex' ;
 
 CREATE CUSTOM INDEX telemetry_latest_ts ON telemetry_latest (ts) 
 USING 'StorageAttachedIndex' ;
+
+
+CREATE TABLE logisticsdemo.alert (
+  organization_id text,
+  device_id text,
+  key text,
+  day date,
+  ts timestamp,
+  value decimal,
+  value2 decimal,
+  alert_message text,
+  primary key ((organization_id,device_id), day, ts, alert_message)
+) with clustering order by (day desc, ts desc, alert_message asc);
