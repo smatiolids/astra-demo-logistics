@@ -13,6 +13,12 @@ const resources = {
   devices: {
     keys: ["organization_id", "device_id"],
   },
+  alert: {
+    keys: ["organization_id", "device_id"],
+  },
+  resources: {
+    keys: ["organization_id", "resource_id"],
+  },
 };
 
 const SEPARATOR = "_";

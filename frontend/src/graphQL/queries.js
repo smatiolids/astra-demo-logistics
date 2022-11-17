@@ -79,3 +79,30 @@ export const GET_DEVICE = gql`
     }
   }
 `;
+
+
+
+export const GET_ALERTS_BY_DEVICE = gql`
+  query getTracking(
+    $org: String
+    $dev: String
+    $lastDay: Date
+    $lastTS: Timestamp
+  ) {
+    alert(
+      options: { pageSize: 1000 }
+      filter: {
+        organization_id: { eq: $org }
+        device_id: { eq: $dev }
+        day: { eq: $lastDay }
+        ts: { gt: $lastTS }
+      }
+    ) {
+      values {
+        ts
+        value
+        alert_message
+      }
+    }
+  }
+`;
