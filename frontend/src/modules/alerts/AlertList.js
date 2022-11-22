@@ -1,7 +1,8 @@
 import {
   List,
   Datagrid,
-  TextField
+  TextField,
+  DateField
 } from "react-admin";
 
 export const AlertList = () => (
@@ -11,7 +12,7 @@ export const AlertList = () => (
       <TextField source="key" />
       <TextField source="value" />
       <TextField source="alert_message" />
-      <TextField source="ts" />
+      <DateField showTime={true} source="ts" />
     </Datagrid>
   </List>
 );
