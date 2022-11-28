@@ -47,6 +47,8 @@ Once the producer is triggered, it is not possible to stop it. If needed, stop t
 
 # Frontend
 
+To run the frontend locally for development purposes follow the instructions:
+
 Built on react-admin (https://marmelab.com/react-admin/).
 
 The data provider is adapted to woth with Astra Stargate.

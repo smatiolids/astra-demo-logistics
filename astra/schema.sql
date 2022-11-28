@@ -47,3 +47,24 @@ CREATE TABLE logisticsdemo.alert (
   alert_message text,
   primary key ((organization_id,device_id), day, ts, alert_message)
 ) with clustering order by (day desc, ts desc, alert_message asc);
+
+
+CREATE TABLE logisticsdemo.resource_by_device_day (
+  organization_id text,
+  device_id text,
+  day date,
+  resource_id text,
+  resource_name text,
+  resource_role text,
+  primary key ((organization_id,device_id,day), resource_id)
+);
+
+
+CREATE TABLE logisticsdemo.resources (
+  organization_id text,
+  resource_id text,
+  name text,
+  role text,
+  picture_url text,
+  primary key ((organization_id), resource_id)
+);
