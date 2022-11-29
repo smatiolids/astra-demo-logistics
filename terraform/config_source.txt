@@ -1,0 +1,93 @@
+{
+  "archive": "builtin://cassandra-enhanced",
+  "autoAck": false,
+  "className": "com.datastax.oss.sink.pulsar.RecordCassandraSinkTask",
+  "cleanupSubscription": false,
+  "configs": {
+    "auth": {
+      "gssapi": {
+        "service": "dse"
+      },
+      "password": "sensitive_data_removed",
+      "provider": "None",
+      "username": "token"
+    },
+    "cloud.secureConnectBundle": "sensitive_data_removed",
+    "compression": "None",
+    "connectionPoolLocalSize": 4,
+    "ignoreErrors": "None",
+    "jmx": true,
+    "maxConcurrentRequests": 500,
+    "maxNumberOfRecordsInBatch": 32,
+    "queryExecutionTimeout": 30,
+    "task.max": 1,
+    "tasks.max": 1,
+    "topic": {
+      "telemetry": {
+        "codec": {
+          "date": "ISO_LOCAL_DATE",
+          "locale": "en_US",
+          "time": "ISO_LOCAL_TIME",
+          "timeZone": "UTC",
+          "timestamp": "CQL_TIMESTAMP",
+          "unit": "MILLISECONDS"
+        },
+        "logisticsdemo": {
+          "telemetry": {
+            "consistencyLevel": "LOCAL_QUORUM",
+            "deletesEnabled": true,
+            "mapping": "organization_id=value.organization_id, device_id=value.device_id, key=value.key, day=value.day, ts=value.ts, value=value.value, value2=value.value2",
+            "nullToUnset": true,
+            "timestampTimeUnit": "MICROSECONDS",
+            "ttl": -1,
+            "ttlTimeUnit": "SECONDS"
+          }
+        }
+      }
+    },
+    "topics": "telemetry"
+  },
+  "customRuntimeOptions": "internal_data",
+  "deadLetterTopic": null,
+  "inputSpecs": {
+    "persistent://cdcdemo-streams/default/telemetry": {
+      "consumerProperties": {},
+      "cryptoConfig": null,
+      "poolMessages": false,
+      "receiverQueueSize": null,
+      "regexPattern": false,
+      "schemaProperties": {},
+      "schemaType": null,
+      "serdeClassName": null
+    }
+  },
+  "inputs": [
+    "persistent://cdcdemo-streams/default/telemetry"
+  ],
+  "maxMessageRetries": null,
+  "name": "sink-telemetry",
+  "namespace": "default",
+  "negativeAckRedeliveryDelayMs": null,
+  "parallelism": 1,
+  "processingGuarantees": "ATLEAST_ONCE",
+  "resources": {
+    "cpu": 0.25,
+    "disk": 1000000000,
+    "ram": 500000000
+  },
+  "retainKeyOrdering": false,
+  "retainOrdering": false,
+  "runtimeFlags": null,
+  "secrets": null,
+  "sourceSubscriptionName": null,
+  "sourceSubscriptionPosition": "Latest",
+  "tenant": "cdcdemo-streams",
+  "timeoutMs": 5000,
+  "topicToSchemaProperties": null,
+  "topicToSchemaType": null,
+  "topicToSerdeClassName": null,
+  "topicsPattern": null,
+  "transformFunction": null,
+  "transformFunctionClassName": null,
+  "transformFunctionConfig": null
+}

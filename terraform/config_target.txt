@@ -1,0 +1,91 @@
+{
+  "archive": "builtin://cassandra-enhanced",
+  "autoAck": true,
+  "className": "com.datastax.oss.sink.pulsar.RecordCassandraSinkTask",
+  "cleanupSubscription": false,
+  "configs": {
+    "auth": {
+      "gssapi": {
+        "service": "dse"
+      },
+      "password": "sensitive_data_removed",
+      "provider": "None",
+      "username": "token"
+    },
+    "compression": "None",
+    "connectionPoolLocalSize": 4,
+    "ignoreErrors": "None",
+    "jmx": true,
+    "maxConcurrentRequests": 500,
+    "maxNumberOfRecordsInBatch": 32,
+    "queryExecutionTimeout": 30,
+    "task.max": 1,
+    "tasks.max": 1,
+    "topic": {
+      "telemetry": {
+        "app": {
+          "telemetry": {
+            "consistencyLevel": "LOCAL_QUORUM",
+            "deletesEnabled": true,
+            "mapping": "organization_id=value.organization_id, device_id=value.device_id, key=value.key, day=value.day, ts=value.ts, value=value.value, value2=value.value2",
+            "nullToUnset": true,
+            "timestampTimeUnit": "MICROSECONDS",
+            "ttl": -1,
+            "ttlTimeUnit": "SECONDS"
+          }
+        },
+        "codec": {
+          "date": "ISO_LOCAL_DATE",
+          "locale": "en_US",
+          "time": "ISO_LOCAL_TIME",
+          "timeZone": "UTC",
+          "timestamp": "CQL_TIMESTAMP",
+          "unit": "MILLISECONDS"
+        }
+      }
+    }
+  },
+  "customRuntimeOptions": "internal_data",
+  "deadLetterTopic": null,
+  "inputSpecs": {
+    "persistent://logistics-st/default/telemetry": {
+      "consumerProperties": {},
+      "cryptoConfig": null,
+      "poolMessages": false,
+      "receiverQueueSize": null,
+      "regexPattern": false,
+      "schemaProperties": {},
+      "schemaType": null,
+      "serdeClassName": null
+    }
+  },
+  "inputs": [
+    "persistent://logistics-st/default/telemetry"
+  ],
+  "maxMessageRetries": null,
+  "name": "cassandra-enhanced",
+  "namespace": "default",
+  "negativeAckRedeliveryDelayMs": null,
+  "parallelism": 1,
+  "processingGuarantees": "ATLEAST_ONCE",
+  "resources": {
+    "cpu": 0.25,
+    "disk": 1000000000,
+    "ram": 1000000000
+  },
+  "retainKeyOrdering": false,
+  "retainOrdering": false,
+  "runtimeFlags": null,
+  "secrets": null,
+  "sourceSubscriptionName": null,
+  "sourceSubscriptionPosition": "Latest",
+  "tenant": "logistics-st",
+  "timeoutMs": 2000,
+  "topicToSchemaProperties": null,
+  "topicToSchemaType": null,
+  "topicToSerdeClassName": null,
+  "topicsPattern": null,
+  "transformFunction": null,
+  "transformFunctionClassName": null,
+  "transformFunctionConfig": null
+}
