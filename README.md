@@ -6,11 +6,13 @@ You need to sign-up to (Astra)[astra.datastax.com]. With that you will have your
 
 You will also need a token with permissions to create all the resources.
 
+# Provisioning Astra Resources
+
 ## Setup Terraform
 
 Follow thw instructions at: https://www.datastax.com/blog/let-s-get-started-with-terraform-for-astra-db
 
-# Run Terraform to provision environment
+## Run Terraform to provision environment
 
 To provision the database and streaming tenant, you can use terraform.
 
@@ -39,12 +41,15 @@ terraform apply  -var-file="myenv.tfvars.json"
 
 Some important outputs from the terraform execution are important to set the environment variables in the next step.
 
-# Set Environment Variables
+
+# Running the application
+
+## Set Environment Variables
 
 Copy the .env_sample to .env and define your local variables
 
 
-# Run Docker Containers
+## Run Docker Containers
 
 At the project root folder, run:
 
@@ -54,7 +59,7 @@ docker-compose up
 
 ```
 
-# Producer
+## Producing messages
 
 All the messages can be triggered via APIs.
 
@@ -77,6 +82,7 @@ All the messages can be triggered via APIs.
 
 Once the producer is triggered, it is not possible to stop it. If needed, stop the container and then clean the data.
 
+
 ## How to generate path files
 
 - Go to the url https://www.keene.edu/campus/maps/tool/[https://www.keene.edu/campus/maps/tool/] and create a path.
@@ -85,7 +91,7 @@ Once the producer is triggered, it is not possible to stop it. If needed, stop t
 
 - The producer will send a line every 3 seconds with the current timestamp.
 
-# Frontend
+# Developing the Frontend WebApp
 
 To run the frontend locally for development purposes follow the instructions:
 
