@@ -1,4 +1,4 @@
-import { List, Datagrid, TextField, EditButton, DateField } from "react-admin";
+import { List, Datagrid, TextField, DateField } from "react-admin";
 
 export const InvoiceList = (props) => (
   <List queryOptions={{ key: props.key, meta:{ fields: ["customer", "shippingDate"] }}}>
