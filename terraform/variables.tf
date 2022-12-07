@@ -11,12 +11,10 @@
 
 variable "ASTRA_ORG_ID" {
   type = string
-  default = "41940237-476e-46b6-9971-1615fcb28048s"
 }
 
 variable "ASTRA_TOKEN" {
   type = string
-  default = "AstraCS:oYvsBhsoBJZcnUOUZoLgvaJm:f289162b0e13ba62f8146acc4f7c7ecc7477deca73b85f2946d471f118dcf8e5"
 }
 
 data "astra_available_regions" "regions" {
@@ -46,8 +44,3 @@ output "bundle" {
   description = "Astra DB bundle"
   value = data.astra_secure_connect_bundle_url.logistics-scb
 }
-
-# output "regions" {
-#   description = "regions"
-#   value = data.astra_available_regions.regions
-# }

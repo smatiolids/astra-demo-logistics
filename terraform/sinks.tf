@@ -4,8 +4,8 @@ resource "astra_streaming_sink" "sink-telemetry" {
   topic          = "persistent://${astra_streaming_tenant.streaming_tenant-1.tenant_name}/default/${local.telemetry_topic}"
   region         = local.regions[0]
   cloud_provider = local.cloud_provider
-  # sink_name             = "cassandra-enhanced"
-  sink_name = "sink_telemetry_lat"
+   sink_name             = "cassandra-enhanced"
+  #sink_name = "sink_telemetry_lat"
 
   retain_ordering       = false
   processing_guarantees = "ATLEAST_ONCE"
@@ -64,8 +64,8 @@ resource "astra_streaming_sink" "sink-telemetry-latest" {
   topic          = "persistent://${astra_streaming_tenant.streaming_tenant-1.tenant_name}/default/${local.telemetry_topic}"
   region         = local.regions[0]
   cloud_provider = local.cloud_provider
-  # sink_name             = "cassandra-enhanced"
-  sink_name             = "sink_telemetry_lat"
+   sink_name             = "cassandra-enhanced"
+  #sink_name             = "sink_telemetry_lat"
   retain_ordering       = false
   processing_guarantees = "ATLEAST_ONCE"
   parallelism           = 1
