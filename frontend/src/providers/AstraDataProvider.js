@@ -1,29 +1,64 @@
 import { fetchUtils } from "react-admin";
 import { stringify } from "query-string";
+import { AstraResources as resources } from "../AstraResources";
 
-const apiUrl = `https://${process.env.REACT_APP_ASTRA_DB_ID}-${process.env.REACT_APP_ASTRA_DB_REGION}.apps.astra.datastax.com/api/rest/v2/keyspaces/${process.env.REACT_APP_ASTRA_DB_KEYSPACE}`;
+const apiUrl = `https://${process.env.REACT_APP_ASTRA_DB_ID}-${process.env.REACT_APP_ASTRA_DB_REGION}.apps.astra.datastax.com/api/rest/v2`;
+
+const API = {
+  REST: {
+    getBase: (resource, query) =>
+      `${apiUrl}/keyspaces/${process.env.REACT_APP_ASTRA_DB_KEYSPACE}/${resource}`,
+    getList: (resource, query) =>
+      `${apiUrl}/keyspaces/${
+        process.env.REACT_APP_ASTRA_DB_KEYSPACE
+      }/${resource}/rows?${stringify(query)}`,
+    getOne: (resource, id) =>
+      `${apiUrl}/keyspaces/${
+        process.env.REACT_APP_ASTRA_DB_KEYSPACE
+      }/${resource}/${IdToRecord(resource, id)}`,
+  },
+  DOCUMENT: {
+    getBase: (resource, query) =>
+      `${apiUrl}/namespaces/${process.env.REACT_APP_ASTRA_DB_KEYSPACE}/collections/${resource}`,
+    getList: (resource, query) =>
+      `${apiUrl}/namespaces/${
+        process.env.REACT_APP_ASTRA_DB_KEYSPACE
+      }/collections/${resource}?${stringify(query)}`,
+    getOne: (resource, id) =>
+      `${apiUrl}/namespaces/${
+        process.env.REACT_APP_ASTRA_DB_KEYSPACE
+      }/${resource}/collections/${IdToRecord(resource, id)}`,
+  },
+};
+
+const tranformData = (resource, data) => {
+  // REST API
+  if (Array.isArray(data))
+    return data.map((r) => ({
+      id: RecordId(resource, r),
+      ...r,
+    }));
+
+  // DOCUMENT API
+  return Object.keys(data).map((k) => {
+    return {
+      id: k,
+      ...data[k],
+    };
+  });
+};
+
 const apiOptions = {
   headers: new Headers({
     "x-cassandra-token": process.env.REACT_APP_ASTRA_DB_APPLICATION_TOKEN,
   }),
 };
-const httpClient = fetchUtils.fetchJson;
 
-const resources = {
-  devices: {
-    keys: ["organization_id", "device_id"],
-  },
-  alert: {
-    keys: ["organization_id", "device_id"],
-  },
-  resources: {
-    keys: ["organization_id", "resource_id"],
-  },
-};
+const httpClient = fetchUtils.fetchJson;
 
 const SEPARATOR = "_";
 const RecordId = (resource, record) => {
-  return resources[resource].keys.map((k) => record[k]).join(SEPARATOR);
+  return resources[resource].key.map((k) => record[k]).join(SEPARATOR);
 };
 
 const IdToRecord = (resource, id) => {
@@ -33,40 +68,52 @@ const IdToRecord = (resource, id) => {
 const AstraDataProvider = {
   getList: (resource, params) => {
     const { perPage } = params.pagination;
+
+    /**
+     * TO-DO: Handle filter, order and pagination
+     */
     // const { page, perPage } = params.pagination;
     // const { field, order } = params.sort;
+
     const query = {
       "page-size": perPage,
     };
-    const url = `${apiUrl}/${resource}/rows?${stringify(query)}`;
-    console.log(params);
 
-    return httpClient(url, apiOptions).then(({ json }) => ({
-      data: json.data.map((r) => ({
-        id: RecordId(resource, r),
-        ...r,
-      })),
-      total: json.count,
-    }));
+    if (params.meta && params.meta.fields) {
+      query.fields = JSON.stringify(params.meta.fields.filter((f) => f !== "id"));
+    }
+
+    const url = API[resources[resource].API].getList(resource, query);
+
+    return httpClient(url, apiOptions).then(({ json }) => {
+      return {
+        data: tranformData(resource, json.data),
+        total: json.count,
+      };
+    });
   },
 
-  getOne: (resource, params) =>
-    httpClient(
-      `${apiUrl}/${resource}/${IdToRecord(resource, params.id)}`,
-      apiOptions
-    ).then(({ json }) => ({
+  getOne: (resource, params) => {
+    const url = API[resources[resource].API].getOne(resource, params.id);
+
+    return httpClient(url, apiOptions).then(({ json }) => ({
       data: {
         id: RecordId(resource, json.data[0]),
         ...json.data[0],
       },
-    })),
+    }));
+  },
 
   getMany: (resource, params) => {
-    const url = `${apiUrl}/${resource}/${IdToRecord(resource, params.id)}`;
+    const url = API[resources[resource].API].getOne(resource, params.id);
     return httpClient(url, apiOptions).then(({ json }) => ({ data: json }));
   },
 
   getManyReference: (resource, params) => {
+    /**
+     * TO-DO: Adjust for Astra
+     */
+
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;
     const query = {
@@ -86,17 +133,17 @@ const AstraDataProvider = {
   },
 
   update: (resource, params) => {
-    let body = params.data;
+    const url = API[resources[resource].API].getOne(resource, params.id);
+
     // Not allowed to send id and pk fields in body
-    resources[resource].keys.concat("id").forEach((k) => delete body[k]);
-    return httpClient(
-      `${apiUrl}/${resource}/${IdToRecord(resource, params.id)}`,
-      {
-        ...apiOptions,
-        method: "PUT",
-        body: JSON.stringify(body),
-      }
-    ).then(({ json }) => ({
+    const body = params.data;
+    resources[resource].key.concat("id").forEach((k) => delete body[k]);
+
+    return httpClient(url, {
+      ...apiOptions,
+      method: "PUT",
+      body: JSON.stringify(body),
+    }).then(({ json }) => ({
       data: {
         id: RecordId(resource, json.data),
         ...json.data,
@@ -105,6 +152,9 @@ const AstraDataProvider = {
   },
 
   updateMany: (resource, params) => {
+    /**
+     * TO-DO: Adjust for Astra
+     */
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };
@@ -115,11 +165,13 @@ const AstraDataProvider = {
   },
 
   create: (resource, params) => {
-    let body = params.data;
+    const url = API[resources[resource].API].getBase(resource);
+
     // Not allowed to send id field in body
+    let body = params.data;
     ["id"].forEach((k) => delete body[k]);
 
-    return httpClient(`${apiUrl}/${resource}`, {
+    return httpClient(url, {
       ...apiOptions,
       method: "POST",
       body: JSON.stringify(params.data),
@@ -128,12 +180,18 @@ const AstraDataProvider = {
     }));
   },
 
-  delete: (resource, params) =>
-    httpClient(`${apiUrl}/${resource}/${params.id}`, {
+  delete: (resource, params) => {
+    const url = API[resources[resource].API].getOne(resource, params.id);
+    return httpClient(url, {
       method: "DELETE",
-    }).then(({ json }) => ({ data: json })),
+    }).then(({ json }) => ({ data: json }));
+  },
 
   deleteMany: (resource, params) => {
+    /**
+     * TO-DO: Adjust for Astra
+     */
+
     const query = {
       filter: JSON.stringify({ id: params.ids }),
     };

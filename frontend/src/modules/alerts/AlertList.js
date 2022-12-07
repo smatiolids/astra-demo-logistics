@@ -5,8 +5,8 @@ import {
   DateField
 } from "react-admin";
 
-export const AlertList = () => (
-  <List queryOptions={{key:['organization_id','device_id']}}>
+export const AlertList = (props) => (
+  <List queryOptions={{key:props.pk}}>
     <Datagrid isRowSelectable={false} >
       <TextField source="device_id" />
       <TextField source="key" />

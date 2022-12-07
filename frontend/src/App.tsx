@@ -14,6 +14,8 @@ import { AlertList } from "./modules/alerts/AlertList";
 import { ResourceList } from "./modules/resources/ResourceList";
 import { ResourceEdit } from "./modules/resources/ResourceEdit";
 import { ResourceCreate } from "./modules/resources/ResourceCreate";
+import { AstraResources } from "./AstraResources";
+import { InvoiceList } from "./modules/invoices/InvoiceList";
 
 const App = () => (
   <Admin
@@ -28,19 +30,24 @@ const App = () => (
       list={DeviceList}
       edit={DeviceEdit}
       create={DeviceCreate}
-      options={{ pk: ["organization_id", "device_id"], label: "Devices" }}
+      options={{ key: AstraResources.devices.key, label: "Devices" }}
     />
     <Resource
       name="resources"
       list={ResourceList}
       edit={ResourceEdit}
       create={ResourceCreate}
-      options={{ pk: ["organization_id", "device_id"], label: "Team" }}
+      options={{ key: AstraResources.resources.key, label: "Team" }}
     />
     <Resource
       name="alert"
       list={AlertList}
-      options={{ pk: ["organization_id", "device_id"], label: "Alerts" }}
+      options={{ key: AstraResources.alert.key, label: "Alerts" }}
+    />
+    <Resource
+      name="invoices"
+      list={InvoiceList}
+      options={{ key: AstraResources.invoices.key, label: "Invoices" }}
     />
     <CustomRoutes>
       <Route path="/tracking/:device_id" element={<TrackingDevice />} />
