@@ -1,8 +1,48 @@
 # Astra-demo-logistics
 
-# Environment Variables
+# Pre-requisites
+
+You need to sign-up to (Astra)[astra.datastax.com]. With that you will have your organization ID.
+
+You will also need a token with permissions to create all the resources.
+
+## Setup Terraform
+
+Follow thw instructions at: https://www.datastax.com/blog/let-s-get-started-with-terraform-for-astra-db
+
+# Run Terraform to provision environment
+
+To provision the database and streaming tenant, you can use terraform.
+
+Create a file to set the variables at the terraform folder with the following content.
+
+E.g.: terraform/myenv.tfvars.json
+
+````
+{
+    "ASTRA_ORG_ID": "<Your Org ID>",
+    "ASTRA_TOKEN": "<Your Astra Token>"
+}
+````
+
+Validate the terraform script with the planning option
+
+`````
+terraform plan  -var-file="myenv.tfvars.json"
+`````
+
+If everything runs fine, you can apply the script to provision the environment
+
+`````
+terraform apply  -var-file="myenv.tfvars.json"
+`````
+
+Some important outputs from the terraform execution are important to set the environment variables in the next step.
+
+# Set Environment Variables
 
 Copy the .env_sample to .env and define your local variables
+
 
 # Run Docker Containers
 
